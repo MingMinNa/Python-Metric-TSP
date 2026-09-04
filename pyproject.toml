@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=83.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name    = "python-metric-tsp"
+version = "0.1.0"
+requires-python = ">=3.13"
+description = "Python implementation of metric TSP algorithms."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["metric-tsp"]
+
+dependencies = [
+    "numpy>=2.5.2",
+    "pandas>=3.0.5"
+]
+
+[project.urls]
+Repository = "https://github.com/MingMinNa/Python-Metric-TSP"
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.16.3",
+    "build>=1.6.0", 
+    "twine>=7.0.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
