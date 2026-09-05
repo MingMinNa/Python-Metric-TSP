@@ -3,11 +3,12 @@ import numpy as np
 from .exceptions import *
 
 
-# Base Class
+# Base class
 class BaseTSP: 
 
-    _num_nodes : int
-    _matrix    : np.ndarray
+    _num_nodes  : int
+    _matrix     : np.ndarray
+    _is_virtual : bool = True
 
     def __init__(self, num_nodes: int) -> None:
 
@@ -37,6 +38,18 @@ class BaseTSP:
             f"{self._matrix!s}"
         )
 
+    def __init_subclass__(cls, *, virtual: bool, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+        cls._is_virtual = virtual
+ 
+    def __new__(cls, *args, **kwargs):
+        if cls._is_virtual:
+            raise TypeError(
+                f"{cls.__name__} is a virtual class and "
+                f"cannot be instantiated directly."
+            )
+        return super().__new__(cls)
+
     @property
     def num_nodes(self) -> int:
         return self._num_nodes
@@ -45,6 +58,7 @@ class BaseTSP:
         self._matrix[u, v] = float(distance)
 
     def set_distance(self, u: int, v: int, distance: float) -> None:
+        """ Set the distance from u to v. """
 
         _check_node(u, self._num_nodes)
         _check_node(v, self._num_nodes)
@@ -59,6 +73,7 @@ class BaseTSP:
         self._set_raw(u, v, distance)
 
     def lookup_distance(self, u: int, v: int) -> float:
+        """ Lookup the distance from u to v. """
 
         _check_node(u, self._num_nodes)
         _check_node(v, self._num_nodes)
@@ -68,12 +83,13 @@ class BaseTSP:
         if u != v and np.isinf(distance):
             raise IncompleteMatrixError(
                 f"The distance between node {u} and node {v} "
-                f"has not been set yet"
+                f"has not been set yet."
             )
 
         return distance
 
     def check_complete(self) -> None:
+        """ Check each entry in the matrix for a value, or it will raise IncompleteMatrixError. """
         
         num_nodes = self._num_nodes
 
@@ -86,10 +102,11 @@ class BaseTSP:
                     )
 
 
-# Triangle Inequality Checker
-class _Metric(BaseTSP):
-    
+# Triangle inequality checker
+class _Metric(BaseTSP, virtual = True):
+
     def check_triangle_inequality(self, tolerance: float = 1e-9) -> None:
+        """ Check if triangle inequality holds, or it will raise TriangleInequalityError. """
     
         num_nodes = self.num_nodes
 
@@ -107,14 +124,15 @@ class _Metric(BaseTSP):
                         raise TriangleInequalityError(
                             f"Triangle inequality violated: "
                             f"d({u}, {w}) = {self.lookup_distance(u, w)} > "
-                            f"d({u}, {v}) + d({v}, {w}) = {self.lookup_distance(u, v) + self.lookup_distance(v, w)}"
+                            f"d({u}, {v}) + d({v}, {w}) = {self.lookup_distance(u, v) + self.lookup_distance(v, w)}."
                         )
 
 
 # Symmetric TSP
-class TSP(BaseTSP): 
+class TSP(BaseTSP, virtual = False): 
 
     def set_distance(self, u: int, v: int, distance: float) -> None:
+        """ Set the distance from u to v. """
     
         _check_node(u, self.num_nodes)
         _check_node(v, self.num_nodes)
@@ -131,19 +149,16 @@ class TSP(BaseTSP):
 
 
 # Asymmetric TSP
-class ATSP(BaseTSP): 
+class ATSP(BaseTSP, virtual = False): 
     pass
-
 
 # Metric symmetric TSP
-class MetricTSP(_Metric, TSP): 
+class MetricTSP(_Metric, TSP, virtual = False): 
     pass
-
 
 # Metric asymmetric TSP
-class MetricATSP(_Metric, ATSP): 
+class MetricATSP(_Metric, ATSP, virtual = False): 
     pass
-
 
 # Helper functions
 
@@ -174,3 +189,17 @@ def _check_distance(distance: float) -> None:
             f"distance must be non-negative, "
             f"got {distance}."
         )
+
+# Class groups
+
+type ALL_GROUP    = TSP | ATSP | MetricTSP | MetricATSP
+type TSP_GROUP    = TSP | MetricTSP
+type ATSP_GROUP   = ATSP | MetricATSP
+type METRIC_GROUP = MetricTSP | MetricATSP
+type NON_METRIC_GROUP = TSP | ATSP
+
+ALL_TUPLE    = (TSP, ATSP, MetricTSP, MetricATSP)
+TSP_TUPLE    = (TSP, MetricTSP)
+ATSP_TUPLE   = (ATSP, MetricATSP)
+METRIC_TUPLE = (MetricTSP, MetricATSP)
+NON_METRIC_TUPLE = (TSP, ATSP)
