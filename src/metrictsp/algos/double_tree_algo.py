@@ -1,11 +1,11 @@
 from ..tsp import *
-from .base_algo import BaseAlgo
+from .base_algo import TOUR, BaseAlgo
 
 
 class DoubleTreeAlgo(BaseAlgo):
 
     @staticmethod
-    def solve(tsp_instance: MetricTSP) -> tuple[list[int], float]: 
+    def solve(tsp_instance: MetricTSP) -> tuple[TOUR, float]: 
 
         if not isinstance(tsp_instance, MetricTSP):
             raise TypeError(

@@ -13,9 +13,10 @@ license-files = ["LICENSE"]
 keywords = ["metric-tsp"]
 
 dependencies = [
+    "tsplib95>=0.7.1",
     "numpy>=2.5.2",
     "pandas>=3.0.5",
-    "networkx>=3.6.1"
+    "networkx~=2.8.8",
 ]
 
 [project.urls]

@@ -3,11 +3,13 @@ from typing import Any
 
 from ..tsp import *
 
+type TOUR = list[int]
+
 
 class BaseAlgo(ABC):
 
     @staticmethod
     @abstractmethod
-    def solve(*args: Any, **kwargs: Any) -> tuple[list[int], float]:
+    def solve(*args: Any, **kwargs: Any) -> tuple[TOUR, float]:
         pass
 
