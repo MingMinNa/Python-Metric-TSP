@@ -21,8 +21,9 @@ def _to_cli_name(cls: type) -> str:
 ALGORITHMS: list[tuple[type, type[BaseTSP]]] = [
     (ChristofidesAlgo,    MetricTSP),
     (DoubleTreeAlgo,      MetricTSP),
-    (NearestAdditionAlgo, BaseTSP),
-    (NearestNeighborAlgo, BaseTSP),
+    (NearestAdditionAlgo,   BaseTSP),
+    (NearestInsertionAlgo,  BaseTSP),
+    (NearestNeighborAlgo,   BaseTSP),
 ]
 
 

@@ -99,8 +99,6 @@ def save_result(
     optimal: float | None,
     elapsed: float
 ):
-    n = instance.num_nodes
-
     ratio = distance / optimal if optimal else float("nan")
 
     header_section = [

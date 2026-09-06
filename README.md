@@ -41,12 +41,13 @@ The following algorithms are currently implemented:
 | -- | --- |:---:| --- |
 | Nearest Neighbor | All TSP variants | — | Heuristic |
 | Nearest Addition | All TSP variants | 2-approximation | Guarantee holds only for Metric TSP |
+| Nearest Insertion | All TSP variants | 2-approximation | Guarantee holds only for Metric TSP |
 | Double Tree | Metric TSP | 2-approximation | Approximation algorithm |
 | Christofides | Metric TSP | 1.5-approximation | Approximation algorithm |
 
 ## Installation
 
-Use the command below to install `metrictsp` to your Python environment.
+Run the command below to install `metrictsp` in your Python environment.
 
 ```bash
 $ git clone https://github.com/MingMinNa/Python-Metric-TSP.git
@@ -65,5 +66,5 @@ print(metrictsp.__version__)
 
 
 
-## Benchmarks
+## Notes
 

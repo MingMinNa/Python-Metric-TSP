@@ -2,7 +2,7 @@ from ..tsp import *
 from .base_algo import TOUR, BaseAlgo
 
 
-class NearestAdditionAlgo(BaseAlgo):
+class NearestInsertionAlgo(BaseAlgo):
 
     @staticmethod
     def solve(tsp_instance: ALL_GROUP, seed: int | None = None) -> tuple[TOUR, float]: 
@@ -46,34 +46,58 @@ class NearestAdditionAlgo(BaseAlgo):
         while len(tour) < num_nodes:
     
             # Find the node that is nearest to any node already in the tour.
-            best_position = 0
             nearest_node = None
             min_distance = float("inf")
+    
+            for candidate in range(num_nodes):
 
+                if candidate in in_tour:
+                    continue
+
+                if not is_asymmetric:
+                    distance = min(
+                        tsp_instance.lookup_distance(candidate, node)
+                        for node in tour
+                    )
+                else:
+                    distance = min(
+                        tsp_instance.lookup_distance(candidate, node) +
+                        tsp_instance.lookup_distance(node, candidate)
+                        for node in tour
+                    )
+
+                if distance < min_distance:
+                    min_distance = distance
+                    nearest_node = candidate
+    
+            # Find the best position to insert nearest_node.
+            best_position = None
+            smallest_increase = float("inf")
             tour_length = len(tour)
-
+    
             for idx in range(tour_length):
+                i = tour[idx]
+                j = tour[(idx + 1) % tour_length]
 
-                node = tour[idx]
+                # Check (i) → (nearest_node) → (j)
+                assert type(nearest_node) is int
 
-                for candidate in range(num_nodes):
+                increase = (
+                    tsp_instance.lookup_distance(i, nearest_node) + 
+                    tsp_instance.lookup_distance(nearest_node, j) - 
+                    tsp_instance.lookup_distance(i, j)
+                )
 
-                    if candidate in in_tour:
-                        continue
-
-                    distance = tsp_instance.lookup_distance(node, candidate)
-
-                    if distance < min_distance:
-                        min_distance = distance
-                        nearest_node = candidate
-                        best_position = idx
+                if increase < smallest_increase:
+                    smallest_increase = increase
+                    best_position = idx + 1
 
             assert (
-                type(best_position) is int and
+                type(best_position) is int and 
                 type(nearest_node ) is int
             )
 
-            tour.insert(best_position + 1, nearest_node)
+            tour.insert(best_position, nearest_node)
             in_tour.add(nearest_node)
     
         total_distance = sum(
