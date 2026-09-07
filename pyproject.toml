@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name    = "python-metric-tsp"
-version = "0.1.0"
+version = "0.2.0"
 requires-python = ">=3.13"
 description = "Python implementation of metric TSP algorithms."
 readme = "README.md"
@@ -15,7 +15,6 @@ keywords = ["metric-tsp"]
 dependencies = [
     "tsplib95>=0.7.1",
     "numpy>=2.5.2",
-    "pandas>=3.0.5",
     "networkx~=2.8.8",
 ]
 

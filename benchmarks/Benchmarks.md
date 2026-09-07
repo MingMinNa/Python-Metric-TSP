@@ -8,8 +8,8 @@ To keep the repository lightweight, only 10 representative test cases are includ
 benchmarks/
 │
 ├── results/          # Benchmark results
-│   ├── {problem-1}/   # Results for problem 1
-│   ├── {problem-2}/   # Results for problem 2
+│   ├── {problem-1}/  # Results for problem 1
+│   ├── {problem-2}/  # Results for problem 2
 │   ...
 │   └── {problem-k}/  # Results for problem k
 ├── testcase/
@@ -40,17 +40,17 @@ $ python ./benchmarks/algos_bench.py nearest_neighbor
 The benchmark results are printed to the command line:
 
 ```txt
-Running DoubleTreeAlgo on 10 problem(s)...
-[   a280   ] distance =      3565.00, optimal =    2579.00, ratio = 1.3823, time =  0.0669s
-[  att48   ] distance =     13925.00, optimal =   10628.00, ratio = 1.3102, time =  0.0019s
-[  att532  ] distance =     37155.00, optimal =   27686.00, ratio = 1.3420, time =  0.6856s
-[  bayg29  ] distance =      2210.00, optimal =    1610.00, ratio = 1.3727, time =  0.0034s
-[ berlin52 ] distance =     10114.00, optimal =    7542.00, ratio = 1.3410, time =  0.0075s
+Running ChristofidesAlgo on 10 problem(s)...
+[   a280   ] distance =      2816.00, optimal =    2579.00, ratio = 1.0919, time =  0.5037s
+[  att48   ] distance =     11441.00, optimal =   10628.00, ratio = 1.0765, time =  0.0211s
+[  att532  ] distance =     30713.00, optimal =   27686.00, ratio = 1.1093, time =  6.6069s
+[  bayg29  ] distance =      1737.00, optimal =    1610.00, ratio = 1.0789, time =  0.0059s
+[ berlin52 ] distance =      8229.00, optimal =    7542.00, ratio = 1.0911, time =  0.0140s
 [  brg180  ] SKIPPED (classified as TSP, not MetricTSP)
-[ burma14  ] distance =      3814.00, optimal =    3323.00, ratio = 1.1478, time =  0.0005s
-[  ch150   ] distance =      8413.00, optimal =    6528.00, ratio = 1.2888, time =  0.0581s
-[   gr96   ] distance =     75301.00, optimal =   55209.00, ratio = 1.3639, time =  0.0255s
-[ulysses22 ] distance =      8401.00, optimal =    7013.00, ratio = 1.1979, time =  0.0015s
+[ burma14  ] distance =      3448.00, optimal =    3323.00, ratio = 1.0376, time =  0.0011s
+[  ch150   ] distance =      7075.00, optimal =    6528.00, ratio = 1.0838, time =  0.0890s
+[   gr96   ] distance =     59403.00, optimal =   55209.00, ratio = 1.0760, time =  0.0343s
+[ulysses22 ] distance =      7448.00, optimal =    7013.00, ratio = 1.0620, time =  0.0012s
 
 Done. Reports saved under: C:\...\Python-Metric-TSP\benchmarks\results
 ```
@@ -67,7 +67,7 @@ For example:
 │ Distance  : 1737.0000                                       │
 │ Optimal   : 1610.0000                                       │
 │ Ratio     : 1.0789                                          │
-│ Time      : 0.0102s                                         │
+│ Time      : 0.0059s                                         │
 ├─────────────────────────────────────────────────────────────┤
 │ Tour:                                                       │
 │  1 —→ 28 —→  6 —→ 12 —→  5 —→  9 —→  3 —→ 29 —→ 26 —→ 21 —→ │
@@ -106,17 +106,17 @@ The new test case should then appear in the benchmark results:
 
 ```txt
 Running ChristofidesAlgo on 11 problem(s)...
-[   a280   ] distance =      2816.00, optimal =    2579.00, ratio = 1.0919, time =  1.1898s
-[  att48   ] distance =     11441.00, optimal =   10628.00, ratio = 1.0765, time =  0.0407s
-[  att532  ] distance =     30713.00, optimal =   27686.00, ratio = 1.1093, time =  7.4917s
-[  bayg29  ] distance =      1737.00, optimal =    1610.00, ratio = 1.0789, time =  0.0139s
-[ berlin52 ] distance =      8229.00, optimal =    7542.00, ratio = 1.0911, time =  0.0248s
+[   a280   ] distance =      2816.00, optimal =    2579.00, ratio = 1.0919, time =  0.5312s
+[  att48   ] distance =     11441.00, optimal =   10628.00, ratio = 1.0765, time =  0.0219s
+[  att532  ] distance =     30713.00, optimal =   27686.00, ratio = 1.1093, time =  6.1203s
+[  bayg29  ] distance =      1737.00, optimal =    1610.00, ratio = 1.0789, time =  0.0029s
+[ berlin52 ] distance =      8229.00, optimal =    7542.00, ratio = 1.0911, time =  0.0093s
 [  brg180  ] SKIPPED (classified as TSP, not MetricTSP)
-[ burma14  ] distance =      3448.00, optimal =    3323.00, ratio = 1.0376, time =  0.0015s
-[  ch150   ] distance =      7075.00, optimal =    6528.00, ratio = 1.0838, time =  0.2147s
-[   gr96   ] distance =     59403.00, optimal =   55209.00, ratio = 1.0760, time =  0.1029s
-[   u159   ] distance =     45664.00, optimal =   42080.00, ratio = 1.0852, time =  0.2496s
-[ulysses22 ] distance =      7448.00, optimal =    7013.00, ratio = 1.0620, time =  0.0053s
+[ burma14  ] distance =      3448.00, optimal =    3323.00, ratio = 1.0376, time =  0.0006s
+[  ch150   ] distance =      7075.00, optimal =    6528.00, ratio = 1.0838, time =  0.1303s
+[   gr96   ] distance =     59403.00, optimal =   55209.00, ratio = 1.0760, time =  0.0426s
+[   u159   ] distance =     45664.00, optimal =   42080.00, ratio = 1.0852, time =  0.1045s
+[ulysses22 ] distance =      7448.00, optimal =    7013.00, ratio = 1.0620, time =  0.0015s
 
 Done. Reports saved under: C:\...\Python-Metric-TSP\benchmarks\results
 ```
@@ -129,7 +129,7 @@ Done. Reports saved under: C:\...\Python-Metric-TSP\benchmarks\results
 │ Distance  : 45664.0000                                                │
 │ Optimal   : 42080.0000                                                │
 │ Ratio     : 1.0852                                                    │
-│ Time      : 0.2496s                                                   │
+│ Time      : 0.1045s                                                   │
 ├───────────────────────────────────────────────────────────────────────┤
 │ Tour:                                                                 │
 │   1 —→ 159 —→   2 —→   4 —→   5 —→ 153 —→ 152 —→   7 —→   8 —→   9 —→ │
@@ -153,18 +153,18 @@ Done. Reports saved under: C:\...\Python-Metric-TSP\benchmarks\results
 
 ## Approximation ratios
 
-|Problem | Nearest Neighbor | Nearest Addition | Nearest Insertion | Double Tree | Christofides |
-|:---------:|:-----:|:-----:|:-----:|:-----:|:-----:|
-| a280      | 1.2241| 1.4118| 1.2001| 1.3823| 1.0919|
-| att48     | 1.2101| 1.3385| 1.1201| 1.3102| 1.0765|
-| att532    | 1.2921| 1.4077| 1.2285| 1.3420| 1.1093|
-| bayg29    | 1.3012| 1.3758| 1.0807| 1.3727| 1.0789|
-| berlin52  | 1.2407| 1.3526| 1.1990| 1.3410| 1.0911|
-| brg180    | 6.3385|60.9436| 3.1897|     ✕|      ✕|
-| burma14   | 1.2182| 1.2058| 1.0108| 1.1478| 1.0376|
-| ch150     | 1.1204| 1.4104| 1.2384| 1.2888| 1.0838|
-| gr96      | 1.2762| 1.3455| 1.2804| 1.3639| 1.0760|
-| ulysses22 | 1.3090| 1.2072| 1.1072| 1.1979| 1.0620|
+|Problem | Type | Nearest Neighbor | Nearest Addition | Nearest Insertion | Double Tree | Christofides |
+|:---------:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
+| a280      |Metric TSP| 1.2520| 1.4118| 1.2001| 1.3823| 1.0919|
+| att48     |Metric TSP| 1.1775| 1.3385| 1.1201| 1.3102| 1.0765|
+| att532    |Metric TSP| 1.2560| 1.4077| 1.2285| 1.3420| 1.1093|
+| bayg29    |Metric TSP| 1.2547| 1.3758| 1.0807| 1.3727| 1.0789|
+| berlin52  |Metric TSP| 1.2096| 1.3526| 1.1990| 1.3410| 1.0911|
+| brg180    |       TSP| 9.1590|60.9436| 3.1897|     ✕|      ✕|
+| burma14   |Metric TSP| 1.2218| 1.2058| 1.0108| 1.1478| 1.0376|
+| ch150     |Metric TSP| 1.1605| 1.4104| 1.2384| 1.2888| 1.0838|
+| gr96      |Metric TSP| 1.2299| 1.3455| 1.2804| 1.3639| 1.0760|
+| ulysses22 |Metric TSP| 1.3090| 1.2072| 1.1072| 1.1979| 1.0620|
 
 
 ## Notes

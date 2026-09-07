@@ -21,8 +21,8 @@ class ChristofidesAlgo(DoubleTreeAlgo):
         if num_nodes == 1:
             return ([0], 0.0)
 
-        mst_edges = ChristofidesAlgo.\
-            _build_mst(tsp_instance)
+        dist = tsp_instance.distance_matrix
+        mst_edges = ChristofidesAlgo._build_mst(dist)
 
         #### Difference between ChristofidesAlgo and DoubleTreeAlgo #####
         
@@ -30,22 +30,20 @@ class ChristofidesAlgo(DoubleTreeAlgo):
             _find_odd_degree_nodes(mst_edges, num_nodes)
         
         matching_edges = ChristofidesAlgo.\
-            _minimum_weight_perfect_matching(tsp_instance, odd_nodes)
+            _minimum_weight_perfect_matching(dist, odd_nodes)
 
-        doubled_edges = mst_edges + matching_edges
+        combined_edges = mst_edges + matching_edges
 
         #################################################################
 
         euler_path = ChristofidesAlgo.\
-            _eulerian_circuit(doubled_edges, num_nodes)
+            _eulerian_circuit(combined_edges, num_nodes)
         
         tour = ChristofidesAlgo.\
             _shortcut(euler_path, num_nodes)
 
-        total_distance = sum(
-            tsp_instance.lookup_distance(tour[i], tour[(i + 1) % num_nodes])
-            for i in range(num_nodes)
-        )
+        tour_arr = np.array(tour, dtype = np.int64)
+        total_distance = float(dist[tour_arr, np.roll(tour_arr, -1)].sum())
 
         return (tour, total_distance)
 
@@ -56,28 +54,28 @@ class ChristofidesAlgo(DoubleTreeAlgo):
     ) -> list[int]:
         """ Find nodes with odd degree in a graph. """
 
-        degree = [0] * num_nodes
+        if not edges:
+            return []
 
-        for u, v in edges:
-            degree[u] += 1
-            degree[v] += 1
+        edges_arr = np.array(edges, dtype = np.int64).reshape(-1, 2)
+        degree = np.bincount(edges_arr.ravel(), minlength = num_nodes)
 
-        return [node for node in range(num_nodes) if degree[node] % 2 == 1]
+        return np.flatnonzero(degree % 2 == 1).tolist()
 
     @staticmethod
     def _minimum_weight_perfect_matching(
-        tsp_instance: MetricTSP, 
+        dist: np.ndarray,
         odd_nodes: list[int],
     ) -> list[tuple[int, int]]:
         """ Find a minimum weight perfect matching among `odd_nodes`. """
-
+        
         graph = nx.Graph()
         graph.add_nodes_from(odd_nodes)
 
         for i in range(len(odd_nodes)):
             for j in range(i + 1, len(odd_nodes)):
                 u, v = odd_nodes[i], odd_nodes[j]
-                distance = tsp_instance.lookup_distance(u, v)
+                distance = dist[u, v]
                 graph.add_edge(u, v, weight = (-1) * distance)
 
         # Note: since `weight = (-1) * distance`, it is actually min weight matching.

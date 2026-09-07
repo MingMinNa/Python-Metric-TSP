@@ -5,7 +5,7 @@ from .base_algo import TOUR, BaseAlgo
 class NearestAdditionAlgo(BaseAlgo):
 
     @staticmethod
-    def solve(tsp_instance: ALL_GROUP, seed: int | None = None) -> tuple[TOUR, float]: 
+    def solve(tsp_instance: ALL_GROUP) -> tuple[TOUR, float]:
 
         if not isinstance(tsp_instance, ALL_TUPLE):
             raise TypeError(
@@ -17,70 +17,42 @@ class NearestAdditionAlgo(BaseAlgo):
          
         if num_nodes == 1:
             return ([0], 0.0)
-    
-        # Start from the nearest pair of nodes.
-        start_u, start_v = 0, 1
-        shortest_edge = tsp_instance. \
-            lookup_distance(start_u, start_v)
 
         is_asymmetric = isinstance(tsp_instance, ATSP_TUPLE)
+        dist = tsp_instance.distance_matrix
 
-        if not is_asymmetric:
-            for u in range(num_nodes):
-                for v in range(u + 1, num_nodes):
-                    distance = tsp_instance.lookup_distance(u, v)
-                    if distance < shortest_edge:
-                        shortest_edge = distance
-                        start_u, start_v = u, v
+        # Start from the nearest pair of nodes.
+        mask = np.ones_like(dist, dtype = bool)
+
+        if is_asymmetric:
+            np.fill_diagonal(mask, False)
         else:
-            for u in range(num_nodes):
-                for v in range(num_nodes):
-                    distance = tsp_instance.lookup_distance(u, v)
-                    if u != v and distance < shortest_edge:
-                        shortest_edge = distance
-                        start_u, start_v = u, v
-    
+            mask = np.triu(mask, k = 1)
+
+        work = np.where(mask, dist, np.inf)
+        start_u, start_v = np.unravel_index(np.argmin(work), work.shape)
+        start_u, start_v = int(start_u), int(start_v)
+
         tour = [start_u, start_v]
-        in_tour = {start_u, start_v}
-    
+        in_tour = np.zeros(num_nodes, dtype = bool)
+        in_tour[start_u] = True
+        in_tour[start_v] = True
+
         while len(tour) < num_nodes:
-    
-            # Find the node that is nearest to any node already in the tour.
-            best_position = 0
-            nearest_node = None
-            min_distance = float("inf")
 
-            tour_length = len(tour)
+            tour_arr = np.array(tour, dtype = np.int64)
 
-            for idx in range(tour_length):
+            candidate_dist = dist[tour_arr, :]
+            candidate_dist = np.where(in_tour[None, :], np.inf, candidate_dist)
 
-                node = tour[idx]
-
-                for candidate in range(num_nodes):
-
-                    if candidate in in_tour:
-                        continue
-
-                    distance = tsp_instance.lookup_distance(node, candidate)
-
-                    if distance < min_distance:
-                        min_distance = distance
-                        nearest_node = candidate
-                        best_position = idx
-
-            assert (
-                type(best_position) is int and
-                type(nearest_node ) is int
-            )
+            flat_idx = int(np.argmin(candidate_dist))
+            best_position, nearest_node = np.unravel_index(flat_idx, candidate_dist.shape)
+            best_position, nearest_node = int(best_position), int(nearest_node)
 
             tour.insert(best_position + 1, nearest_node)
-            in_tour.add(nearest_node)
-    
-        total_distance = sum(
-            tsp_instance.lookup_distance(
-                tour[i], tour[(i + 1) % num_nodes]
-            )
-            for i in range(num_nodes)
-        )
-    
+            in_tour[nearest_node] = True
+
+        tour_arr = np.array(tour, dtype = np.int64)
+        total_distance = float(dist[tour_arr, np.roll(tour_arr, -1)].sum())
+
         return (tour, total_distance)

@@ -17,8 +17,8 @@ class DoubleTreeAlgo(BaseAlgo):
         if num_nodes == 1:
             return ([0], 0.0)
 
-        mst_edges = DoubleTreeAlgo.\
-            _build_mst(tsp_instance)
+        dist = tsp_instance.distance_matrix
+        mst_edges = DoubleTreeAlgo._build_mst(dist)
 
         #### Difference between ChristofidesAlgo and DoubleTreeAlgo #####
 
@@ -32,50 +32,39 @@ class DoubleTreeAlgo(BaseAlgo):
         tour = DoubleTreeAlgo.\
             _shortcut(euler_path, num_nodes)
 
-        total_distance = sum(
-            tsp_instance.lookup_distance(tour[i], tour[(i + 1) % num_nodes])
-            for i in range(num_nodes)
-        )
+        tour_arr = np.array(tour, dtype = np.int64)
+        total_distance = float(dist[tour_arr, np.roll(tour_arr, -1)].sum())
 
         return (tour, total_distance)
 
     # Prim's algorithm
     @staticmethod
-    def _build_mst(tsp_instance: MetricTSP) -> list[tuple[int, int]]:
+    def _build_mst(dist: np.ndarray) -> list[tuple[int, int]]:
         """ Build a minimum spanning tree using Prim's algorithm. """
 
-        num_nodes = tsp_instance.num_nodes
+        num_nodes = dist.shape[0]
 
-        in_mst        : list[bool]  = [False] * num_nodes
-        parent        : list[int]   = [-1] * num_nodes
-        min_edge_cost : list[float] = [float("inf")] * num_nodes
+        in_mst        = np.zeros(num_nodes, dtype = bool)
+        parent        = np.full(num_nodes, -1, dtype = np.int64)
+        min_edge_cost = np.full(num_nodes, np.inf, dtype = np.float64)
 
         min_edge_cost[0] = 0.0
         mst_edges: list[tuple[int, int]] = []
 
         for _ in range(num_nodes):
 
-            u = min(
-                (node for node in range(num_nodes) if not in_mst[node]),
-                key = lambda node: min_edge_cost[node],
-            )
+            costs = np.where(in_mst, np.inf, min_edge_cost)
+            u = int(np.argmin(costs))
 
             in_mst[u] = True
 
             if parent[u] != -1:
-                mst_edges.append((parent[u], u))
+                mst_edges.append((int(parent[u]), u))
 
-            for v in range(num_nodes):
-
-                if in_mst[v]:
-                    continue
-
-                distance = tsp_instance.\
-                    lookup_distance(u, v)
-
-                if distance < min_edge_cost[v]:
-                    min_edge_cost[v] = distance
-                    parent[v] = u
+            row = dist[u]
+            better = (~in_mst) & (row < min_edge_cost)
+            min_edge_cost[better] = row[better]
+            parent[better] = u
 
         return mst_edges
 

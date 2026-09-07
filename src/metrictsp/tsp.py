@@ -49,6 +49,14 @@ class BaseTSP:
     def num_nodes(self) -> int:
         return self._num_nodes
 
+    @property
+    def distance_matrix(self) -> np.ndarray:
+
+        view = self._matrix.view()
+        view.setflags(write = False)
+
+        return view
+
     def _set_raw(self, u: int, v: int, distance: float) -> None:
         self._matrix[u, v] = float(distance)
 
@@ -89,15 +97,15 @@ class BaseTSP:
         or it will raise IncompleteMatrixError. 
         """
         
-        num_nodes = self._num_nodes
+        incomplete = np.isinf(self._matrix)
 
-        for u in range(num_nodes):
-            for v in range(num_nodes):
-                if u != v and np.isinf(self._matrix[u, v]):
-                    raise IncompleteMatrixError(
-                        f"The distance matrix is incomplete: "
-                        f"entry ({u}, {v}) has no value."
-                    )
+        if incomplete.any():
+            flat_idx = int(incomplete.reshape(-1).argmax())
+            u, v = divmod(flat_idx, self._num_nodes)
+            raise IncompleteMatrixError(
+                f"The distance matrix is incomplete: "
+                f"entry ({u}, {v}) has no value."
+            )
 
 
 # Symmetric TSP
@@ -203,68 +211,81 @@ def _check_triangle_inequality_for_edge(
 
     d_uv = matrix[u, v]
 
-    for w in range(num_nodes):
+    d_vw = matrix[v, :]  # d(v, w) for every w
+    d_uw = matrix[u, :]  # d(u, w) for every w
+    d_wv = matrix[:, v]  # d(w, v) for every w
+    d_wu = matrix[:, u]  # d(w, u) for every w
 
-        if w == u or w == v:
-            continue
+    skip = np.zeros(num_nodes, dtype = bool)
+    skip[u] = True
+    skip[v] = True
 
-        d_uw = matrix[u, w]
-        d_wv = matrix[w, v]
-        d_wu = matrix[w, u]
-        d_vw = matrix[v, w]
+    # d(u, v) > d(u, w) + d(w, v) + tolerance
+    cond_1 = (
+        ~skip & 
+        ~(np.isinf(d_uw) | np.isinf(d_wv)) & 
+        (d_uv > d_uw + d_wv + tolerance)
+    )
 
-        if (
-            not (np.isinf(d_uw) or np.isinf(d_wv)) and
-            d_uv > d_uw + d_wv + tolerance
-        ):
-            raise TriangleInequalityError(
-                f"Triangle inequality violated: "
-                f"d({u}, {v}) = {d_uv} > "
-                f"d({u}, {w}) + d({w}, {v}) = {d_uw + d_wv}."
-            )
+    if cond_1.any():
+        w = int(np.flatnonzero(cond_1)[0])
+        raise TriangleInequalityError(
+            f"Triangle inequality violated: "
+            f"d({u}, {v}) = {d_uv} > "
+            f"d({u}, {w}) + d({w}, {v}) = {d_uw[w] + d_wv[w]}."
+        )
 
-        if (
-            not (np.isinf(d_uw) or np.isinf(d_vw)) and 
-            d_uw > d_uv + d_vw + tolerance
-        ):
-            raise TriangleInequalityError(
-                f"Triangle inequality violated: "
-                f"d({u}, {w}) = {d_uw} > "
-                f"d({u}, {v}) + d({v}, {w}) = {d_uv + d_vw}."
-            )
+    # d(u, w) > d(u, v) + d(v, w) + tolerance
+    cond_2 = (
+        ~skip & 
+        ~(np.isinf(d_uw) | np.isinf(d_vw)) & 
+        (d_uw > d_uv + d_vw + tolerance)
+    )
 
-        if (
-            not (np.isinf(d_wv) or np.isinf(d_wu))
-            and d_wv > d_wu + d_uv + tolerance
-        ):
-            raise TriangleInequalityError(
-                f"Triangle inequality violated: "
-                f"d({w}, {v}) = {d_wv} > "
-                f"d({w}, {u}) + d({u}, {v}) = {d_wu + d_uv}."
-            )
+    if cond_2.any():
+        w = int(np.flatnonzero(cond_2)[0])
+        raise TriangleInequalityError(
+            f"Triangle inequality violated: "
+            f"d({u}, {w}) = {d_uw[w]} > "
+            f"d({u}, {v}) + d({v}, {w}) = {d_uv + d_vw[w]}."
+        )
+
+    # d(w, v) > d(w, u) + d(u, v) + tolerance
+    cond_3 = (
+        ~skip & 
+        ~(np.isinf(d_wv) | np.isinf(d_wu)) & 
+        (d_wv > d_wu + d_uv + tolerance)
+    )
+
+    if cond_3.any():
+        w = int(np.flatnonzero(cond_3)[0])
+        raise TriangleInequalityError(
+            f"Triangle inequality violated: "
+            f"d({w}, {v}) = {d_wv[w]} > "
+            f"d({w}, {u}) + d({u}, {v}) = {d_wu[w] + d_uv}."
+        )
 
 def _is_metric(instance: BaseTSP, tolerance: float) -> bool:
 
     num_nodes = instance.num_nodes
     matrix = instance._matrix
 
-    for u in range(num_nodes):
-        for v in range(num_nodes):
-            for w in range(num_nodes):
-                if matrix[u, w] > matrix[u, v] + matrix[v, w] + tolerance:
-                    return False
+    for v in range(num_nodes):
+
+        col = matrix[:, v]  # d(u, v) for every u, shape (n,)
+        row = matrix[v, :]  # d(v, w) for every w, shape (n,)
+
+        # via_v[u, w] = d(u, v) + d(v, w), shape (n, n)
+        via_v = col[:, None] + row[None, :]
+
+        if np.any(matrix > via_v + tolerance):
+            return False
+
     return True
 
 def _is_symmetric(instance: BaseTSP) -> bool:
-
-    num_nodes = instance.num_nodes
     matrix = instance._matrix
-
-    for u in range(num_nodes):
-        for v in range(u + 1, num_nodes):
-            if not np.isclose(matrix[u, v], matrix[v, u]):
-                return False
-    return True
+    return bool(np.allclose(matrix, matrix.T))
 
 
 # Class groups

@@ -1,5 +1,3 @@
-import random
-
 from ..tsp import *
 from .base_algo import TOUR, BaseAlgo
 
@@ -16,43 +14,30 @@ class NearestNeighborAlgo(BaseAlgo):
             )
 
         num_nodes = tsp_instance.num_nodes
+        dist = tsp_instance.distance_matrix
 
         # Choose an arbitrary vertex as the starting point.
-        rng     = random.Random(seed)
-        current = rng.randint(0, num_nodes - 1)
-        tour    = [current]
-        
-        visited = [False] * num_nodes
+        rng     = np.random.default_rng(seed)
+        current = int(rng.integers(0, num_nodes))
+
+        tour = np.empty(num_nodes, dtype = np.int64)
+        tour[0] = current
+
+        visited = np.zeros(num_nodes, dtype = bool)
         visited[current] = True
- 
-        for _ in range(num_nodes - 1):
- 
-            nearest_node = None
-            nearest_distance = float("inf")
 
-            # Select the next node from the remaining nodes.
-            for candidate in range(num_nodes):
+        for step in range(1, num_nodes):
 
-                if visited[candidate]:
-                    continue
+            # Note: 
+            # If visited[i] = True, candidate_row[i] = np.inf.
+            # Otherwise           , candidate_row[i] = dist[current][i]
+            candidate_row = np.where(visited, np.inf, dist[current])
+            nearest_node = int(np.argmin(candidate_row))
 
-                distance = tsp_instance.lookup_distance(current, candidate)
-                
-                if distance < nearest_distance:
-                    nearest_distance = distance
-                    nearest_node = candidate
-
-            assert nearest_node is not None
-
-            tour.append(nearest_node)
+            tour[step] = nearest_node
             visited[nearest_node] = True
             current = nearest_node
- 
-        total_distance = sum(
-            tsp_instance.lookup_distance(tour[i], tour[i + 1])
-            for i in range(num_nodes - 1)
-        )
 
-        total_distance += tsp_instance.lookup_distance(tour[-1], tour[0])
- 
-        return (tour, total_distance)
+        total_distance = float(dist[tour, np.roll(tour, -1)].sum())
+
+        return (tour.tolist(), total_distance)
