@@ -24,8 +24,8 @@ Whether the TSP satisfies the symmetry condition $c(u,v) = c(v,u)$.
 Whether the TSP satisfies the triangle inequality $c(u,w) \leq c(u,v) + c(v,w)$.
 
 Combining these two properties gives four common variants: 
-- **Symmetric Metric TSP** (MetricTSP)
-- **Asymmetric Metric TSP** (MetricATSP)
+- **Symmetric Metric TSP** (Metric TSP)
+- **Asymmetric Metric TSP** (Metric ATSP)
 - **Symmetric Non-Metric TSP** (TSP)
 - **Asymmetric Non-Metric TSP** (ATSP)
 
@@ -38,12 +38,14 @@ Note: See Unit 2.4 in [*The Design of Approximation Algorithms*](https://www.des
 
 The following algorithms are currently implemented:
 | Algorithm | Applicable TSP Variants | Approximation Ratio | Notes |
-| -- | --- |:---:| --- |
-| Nearest Neighbor | All TSP variants | — | Heuristic |
-| Nearest Addition | All TSP variants | 2-approximation | Guarantee holds only for Metric TSP |
-| Nearest Insertion | All TSP variants | 2-approximation | Guarantee holds only for Metric TSP |
-| Double Tree | Metric TSP | 2-approximation | Approximation algorithm |
-| Christofides | Metric TSP | 1.5-approximation | Approximation algorithm |
+| --------- | ----------------------- |:-------------------:| ----- |
+| Christofides      | Metric TSP       | 1.5-approximation | Approximation algorithm             |
+| Double Tree       | Metric TSP       | 2-approximation   | Approximation algorithm             |
+| Nearest Addition  | All TSP variants | 2-approximation   | Guarantee holds only for Metric TSP |
+| Nearest Insertion | All TSP variants | 2-approximation   | Guarantee holds only for Metric TSP |
+| Cheapest Insertion| All TSP variants | 2-approximation   | Guarantee holds only for Metric TSP |
+| Farthest Insertion| All TSP variants | $O(\log \\, n)$-approximation   | Guarantee holds only for Metric TSP |
+| Nearest Neighbor  | All TSP variants | —                 | Heuristic                           |
 
 ## Installation
 

@@ -19,8 +19,10 @@ def _to_cli_name(cls: type) -> str:
 
 # Each entry pairs an algorithm class with the TSP type it requires.
 ALGORITHMS: list[tuple[type, type[BaseTSP]]] = [
+    (CheapestInsertionAlgo, BaseTSP),
     (ChristofidesAlgo,    MetricTSP),
     (DoubleTreeAlgo,      MetricTSP),
+    (FarthestInsertionAlgo, BaseTSP),
     (NearestAdditionAlgo,   BaseTSP),
     (NearestInsertionAlgo,  BaseTSP),
     (NearestNeighborAlgo,   BaseTSP),

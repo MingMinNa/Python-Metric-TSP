@@ -31,8 +31,10 @@ $ python ./benchmarks/algos_bench.py all
 $ python ./benchmarks/algos_bench.py christofides
 $ python ./benchmarks/algos_bench.py double_tree
 $ python ./benchmarks/algos_bench.py nearest_addition
-$ python ./benchmarks/algos_bench.py nearest_insertion
 $ python ./benchmarks/algos_bench.py nearest_neighbor
+$ python ./benchmarks/algos_bench.py nearest_insertion
+$ python ./benchmarks/algos_bench.py cheapest_insertion
+$ python ./benchmarks/algos_bench.py farthest_insertion
 ```
 
 ## Results
@@ -153,18 +155,18 @@ Done. Reports saved under: C:\...\Python-Metric-TSP\benchmarks\results
 
 ## Approximation ratios
 
-|Problem | Type | Nearest Neighbor | Nearest Addition | Nearest Insertion | Double Tree | Christofides |
-|:---------:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
-| a280      |Metric TSP| 1.2520| 1.4118| 1.2001| 1.3823| 1.0919|
-| att48     |Metric TSP| 1.1775| 1.3385| 1.1201| 1.3102| 1.0765|
-| att532    |Metric TSP| 1.2560| 1.4077| 1.2285| 1.3420| 1.1093|
-| bayg29    |Metric TSP| 1.2547| 1.3758| 1.0807| 1.3727| 1.0789|
-| berlin52  |Metric TSP| 1.2096| 1.3526| 1.1990| 1.3410| 1.0911|
-| brg180    |       TSP| 9.1590|60.9436| 3.1897|     ✕|      ✕|
-| burma14   |Metric TSP| 1.2218| 1.2058| 1.0108| 1.1478| 1.0376|
-| ch150     |Metric TSP| 1.1605| 1.4104| 1.2384| 1.2888| 1.0838|
-| gr96      |Metric TSP| 1.2299| 1.3455| 1.2804| 1.3639| 1.0760|
-| ulysses22 |Metric TSP| 1.3090| 1.2072| 1.1072| 1.1979| 1.0620|
+|Problem | Nearest Neighbor | Nearest Addition | Nearest Insertion | Cheapest Insertion | Farthest Insertion | Double Tree | Christofides |
+|:---------:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
+| a280      | 1.2520| 1.4118| 1.2001| 1.1660| 1.1644| 1.3823| 1.0919|
+| att48     | 1.1775| 1.3385| 1.1201| 1.0700| 1.0636| 1.3102| 1.0765|
+| att532    | 1.2560| 1.4077| 1.2285| 1.1704| 1.0885| 1.3420| 1.1093|
+| bayg29    | 1.2547| 1.3758| 1.0807| 1.1466| 1.0391| 1.3727| 1.0789|
+| berlin52  | 1.2096| 1.3526| 1.1990| 1.1900| 1.0764| 1.3410| 1.0911|
+| brg180    | 9.1590|60.9436| 3.1897| 1.2410| 1.6718|     ✕|      ✕|
+| burma14   | 1.2218| 1.2058| 1.0108| 1.0108| 1.0000| 1.1478| 1.0376|
+| ch150     | 1.1605| 1.4104| 1.2384| 1.1857| 1.0515| 1.2888| 1.0838|
+| gr96      | 1.2299| 1.3455| 1.2804| 1.2702| 1.0801| 1.3639| 1.0760|
+| ulysses22 | 1.3090| 1.2072| 1.1072| 1.0719| 1.0000| 1.1979| 1.0620|
 
 
 ## Notes
